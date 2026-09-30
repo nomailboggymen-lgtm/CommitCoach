@@ -1,0 +1,5 @@
+[functions.mentor]
+verify_jwt = false
+
+[functions.github-analyze]
+verify_jwt = false

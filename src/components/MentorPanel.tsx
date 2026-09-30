@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { X, Loader2, BookOpen, Lightbulb, HelpCircle, AlertCircle, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/Button';
 import { Card } from '@/components/Card';
@@ -30,6 +30,14 @@ export function MentorPanel({ mode, mission, project, onClose }: MentorPanelProp
   const [userMessage, setUserMessage] = useState('');
   const [showStuckForm, setShowStuckForm] = useState(mode === 'stuck');
 
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', handleEsc);
+    return () => document.removeEventListener('keydown', handleEsc);
+  }, [onClose]);
+
   const buildRequest = useCallback(
     (overrides?: Partial<{ hintLevel: number; stuckType: StuckType; userMessage: string }>) => ({
       project: {
@@ -54,12 +62,9 @@ export function MentorPanel({ mode, mission, project, onClose }: MentorPanelProp
 
   const fallbackContent = useCallback((): string => {
     if (mode === 'explain') return mission.explanation;
-    if (mode === 'hint') {
-      if (hintLevel <= 1) return mission.hint;
-      return mission.hint;
-    }
+    if (mode === 'hint') return mission.hint;
     return mission.stuckGuidance;
-  }, [mode, mission, hintLevel]);
+  }, [mode, mission]);
 
   const fetchMentor = useCallback(
     async (opts?: Partial<{ hintLevel: number; stuckType: StuckType; userMessage: string }>) => {
@@ -125,7 +130,7 @@ export function MentorPanel({ mode, mission, project, onClose }: MentorPanelProp
             <button
               key={opt.value}
               onClick={() => setStuckType(opt.value)}
-              className={`flex w-full items-center gap-3 rounded-xl border px-4 py-3 text-sm transition-all ${stuckType === opt.value ? 'border-neutral-900 bg-neutral-900 text-white' : 'border-neutral-200 bg-white text-neutral-700 hover:border-neutral-300'}`}
+              className={`flex w-full items-center gap-3 rounded-xl border px-4 py-3 text-sm transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400 ${stuckType === opt.value ? 'border-neutral-900 bg-neutral-900 text-white' : 'border-neutral-200 bg-white text-neutral-700 hover:border-neutral-300'}`}
             >
               <span className={`h-4 w-4 rounded-full border-2 ${stuckType === opt.value ? 'border-white' : 'border-neutral-300'}`} />
               {opt.label}
@@ -133,14 +138,15 @@ export function MentorPanel({ mode, mission, project, onClose }: MentorPanelProp
           ))}
         </div>
         <div>
-          <label className="mb-1 block text-xs font-medium text-neutral-400">
+          <label htmlFor="stuck-desc" className="mb-1 block text-xs font-medium text-neutral-400">
             Tell your mentor what you see...
           </label>
           <textarea
+            id="stuck-desc"
             value={userMessage}
             onChange={(e) => setUserMessage(e.target.value)}
             rows={2}
-            className="w-full resize-none rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm outline-none transition-colors focus:border-neutral-400"
+            className="w-full resize-none rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm outline-none transition-colors focus:border-neutral-400 focus:ring-2 focus:ring-neutral-100"
             placeholder="Describe what you're experiencing..."
           />
         </div>
@@ -159,12 +165,12 @@ export function MentorPanel({ mode, mission, project, onClose }: MentorPanelProp
         {isFallback && (
           <div className="mb-2 flex items-center gap-1.5 text-xs font-medium text-neutral-400">
             <AlertCircle className="h-3.5 w-3.5" />
-            Mentor fallback
+            Built-in mentor
           </div>
         )}
         {mode === 'hint' && (
           <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-neutral-400">
-            Hint {hintLevel}
+            Hint {hintLevel} of 3
           </p>
         )}
         <p className="whitespace-pre-line text-sm leading-relaxed text-neutral-700">
@@ -175,7 +181,13 @@ export function MentorPanel({ mode, mission, project, onClose }: MentorPanelProp
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/30 sm:items-center" onClick={onClose}>
+    <div
+      className="fixed inset-0 z-50 flex items-end justify-center bg-black/30 sm:items-center"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label={cfg.title}
+    >
       <div
         className="max-h-[85vh] w-full max-w-md overflow-y-auto rounded-t-3xl bg-white p-5 shadow-xl sm:rounded-3xl animate-slide-up"
         onClick={(e) => e.stopPropagation()}
@@ -187,7 +199,11 @@ export function MentorPanel({ mode, mission, project, onClose }: MentorPanelProp
             </div>
             <span className="text-sm font-semibold">{cfg.title}</span>
           </div>
-          <button onClick={onClose} className="text-neutral-400 hover:text-neutral-900">
+          <button
+            onClick={onClose}
+            aria-label="Close mentor panel"
+            className="text-neutral-400 hover:text-neutral-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400 rounded-lg"
+          >
             <X className="h-5 w-5" />
           </button>
         </div>

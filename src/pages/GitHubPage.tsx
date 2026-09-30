@@ -9,7 +9,6 @@ import {
   CheckCircle2,
   ArrowRight,
   AlertCircle,
-  Star,
   GitBranch,
 } from 'lucide-react';
 import { Button } from '@/components/Button';
@@ -79,7 +78,6 @@ export function GitHubPage() {
   const formatDate = (date: string) =>
     new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
-  // Loading state
   if (loading) {
     return (
       <div>
@@ -105,7 +103,6 @@ export function GitHubPage() {
     );
   }
 
-  // Result state
   if (analysis && !error) {
     return (
       <div>
@@ -204,13 +201,12 @@ export function GitHubPage() {
           </Button>
         </div>
 
-        <h2 className="mb-3 text-sm font-semibold text-neutral-900">Commit timeline</h2>
+        <h2 className="mb-3 text-sm font-semibold text-neutral-900">Repository activity</h2>
         <GitHubTimeline commits={analysis.commits} />
       </div>
     );
   }
 
-  // Error state (with retry)
   if (error) {
     return (
       <div>
@@ -234,7 +230,6 @@ export function GitHubPage() {
     );
   }
 
-  // Initial / input state
   return (
     <div>
       <header className="mb-6 flex items-center gap-3">
@@ -248,18 +243,22 @@ export function GitHubPage() {
       </header>
 
       <h2 className="mb-1 text-lg font-bold tracking-tight text-neutral-900">
-        Show Your Project's Journey
+        Show your project's journey
       </h2>
       <p className="mb-4 text-sm text-neutral-500">
         Connect a public GitHub repository to see the iterations behind your project.
       </p>
 
       <Card className="mb-4">
+        <label htmlFor="repo-url" className="mb-2 block text-xs font-semibold uppercase tracking-wide text-neutral-400">
+          Repository URL
+        </label>
         <input
+          id="repo-url"
           value={repoUrl}
           onChange={(e) => setRepoUrl(e.target.value)}
           placeholder="https://github.com/username/project"
-          className="w-full rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm outline-none transition-colors focus:border-neutral-400"
+          className="w-full rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm outline-none transition-colors focus:border-neutral-400 focus:ring-2 focus:ring-neutral-100"
         />
         {urlError && (
           <p className="mt-2 text-xs text-red-500">{urlError}</p>
@@ -279,7 +278,7 @@ export function GitHubPage() {
           <p className="text-sm font-medium text-neutral-700">
             {analysis.owner}/{analysis.repo}
           </p>
-          <Button variant="ghost" onClick={() => setAnalysis(analysis)} className="mt-2 px-0 text-xs">
+          <Button variant="ghost" onClick={() => setError(null)} className="mt-2 px-0 text-xs">
             View previous analysis
           </Button>
         </Card>

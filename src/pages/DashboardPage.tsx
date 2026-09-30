@@ -9,7 +9,7 @@ import { getDashboardSummary } from '@/services/missionService';
 import { useState } from 'react';
 
 export function DashboardPage() {
-  const { project, reflections } = useApp();
+  const { project } = useApp();
   const [lockedNotice, setLockedNotice] = useState<string | null>(null);
 
   if (!project) {
@@ -18,11 +18,11 @@ export function DashboardPage() {
         <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-neutral-100">
           <Plus className="h-8 w-8 text-neutral-400" />
         </div>
-        <h2 className="mb-2 text-xl font-bold tracking-tight">Start your first project</h2>
+        <h2 className="mb-2 text-xl font-bold tracking-tight">Your first project is waiting.</h2>
         <p className="mb-6 text-sm text-neutral-500">
           Set up a project and we'll generate a step-by-step learning plan for you.
         </p>
-        <Button onClick={() => navigate('/setup')}>Create a project</Button>
+        <Button onClick={() => navigate('/setup')}>Start Building</Button>
       </div>
     );
   }
@@ -30,6 +30,13 @@ export function DashboardPage() {
   const summary = getDashboardSummary(project);
   const pct = Math.round((summary.missionsCompleted / summary.totalMissions) * 100);
   const isComplete = project.completedAt != null;
+
+  const contextualLine =
+    summary.missionsCompleted === 0
+      ? 'Your first step is ready.'
+      : isComplete
+        ? 'Your learning plan is complete.'
+        : "You're making progress. Keep building.";
 
   const handleMissionClick = (missionId: string) => {
     const mission = project.missions.find((m) => m.id === missionId);
@@ -51,7 +58,7 @@ export function DashboardPage() {
   return (
     <div>
       <header className="mb-6">
-        <p className="text-xs font-medium text-neutral-400">Your project</p>
+        <p className="text-xs font-medium text-neutral-400">Your Project</p>
         <h1 className="text-2xl font-bold tracking-tight">{project.name}</h1>
         <p className="mt-1 text-sm text-neutral-500">
           {project.type} · {project.experience}
@@ -64,12 +71,13 @@ export function DashboardPage() {
             <p className="text-xs font-medium text-neutral-400">Your progress</p>
             <p className="text-2xl font-bold">
               {summary.missionsCompleted}<span className="text-neutral-400">/{summary.totalMissions}</span>
-              <span className="ml-1 text-sm font-medium text-neutral-500">missions complete</span>
+              <span className="ml-1.5 text-sm font-medium text-neutral-500">missions complete</span>
             </p>
           </div>
           <span className="text-sm font-semibold text-neutral-500">{pct}%</span>
         </div>
         <ProgressBar value={summary.missionsCompleted} max={summary.totalMissions} />
+        <p className="mt-3 text-xs text-neutral-500">{contextualLine}</p>
       </Card>
 
       <div className="mb-6 grid grid-cols-3 gap-2">

@@ -61,11 +61,10 @@ export function ShippedPage() {
         </div>
         <div>
           <h1 className="text-xl font-bold tracking-tight">You shipped your first project.</h1>
-          <p className="text-xs text-neutral-500">Your building journey so far</p>
+          <p className="text-xs text-neutral-500">Here is the story of how it came together.</p>
         </div>
       </header>
 
-      {/* Stats */}
       <div className="mb-6 grid grid-cols-2 gap-3">
         {stats.map((s) => (
           <Card key={s.label} className="flex flex-col gap-1">
@@ -75,12 +74,11 @@ export function ShippedPage() {
         ))}
       </div>
 
-      {/* Learning Journey */}
       <h2 className="mb-3 text-sm font-semibold text-neutral-900">Your learning journey</h2>
       {journey.length === 0 ? (
         <Card className="mb-6 py-8 text-center">
           <p className="text-sm text-neutral-400">
-            Your learning reflections will appear here.
+            Your reflections will appear here as you complete missions.
           </p>
         </Card>
       ) : (
@@ -105,7 +103,6 @@ export function ShippedPage() {
         </div>
       )}
 
-      {/* Project Journey (GitHub) */}
       {githubAnalysis ? (
         <>
           <h2 className="mb-3 text-sm font-semibold text-neutral-900">Your project journey</h2>
@@ -134,7 +131,7 @@ export function ShippedPage() {
         <Card className="mb-6 py-8 text-center">
           <Github className="mx-auto mb-3 h-8 w-8 text-neutral-300" />
           <p className="mb-4 text-sm text-neutral-400">
-            Connect a GitHub repository to see your project journey.
+            Connect a public repository to reveal your project journey.
           </p>
           <Button variant="secondary" onClick={() => navigate('/github')} className="w-full">
             Connect GitHub
@@ -143,18 +140,14 @@ export function ShippedPage() {
         </Card>
       )}
 
-      {/* Completion message */}
       {isComplete && (
         <Card className="mt-6 border-neutral-900 bg-neutral-900 text-white">
           <div className="flex items-start gap-3">
             <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-400" />
             <div>
-              <p className="text-sm font-bold">
-                You didn't just finish a project. You can explain how you built it.
-              </p>
+              <p className="text-sm font-bold">From idea to commit.</p>
               <p className="mt-1 text-xs text-neutral-300">
-                Every mission you completed, every reflection you wrote, and every commit
-                you pushed is part of your journey.
+                You built, reflected, iterated, and shipped.
               </p>
             </div>
           </div>

@@ -17,7 +17,7 @@ export function BottomNav({ route }: BottomNavProps) {
     route.name === 'mission' ? 'dashboard' : route.name === 'home' ? 'dashboard' : route.name;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-neutral-200 bg-white/90 backdrop-blur-lg">
+    <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-neutral-200 bg-white/90 backdrop-blur-lg">
       <div className="mx-auto flex max-w-md items-center justify-around px-4 py-2">
         {items.map(({ name, label, icon: Icon, path }) => {
           const active = activeName === name;
@@ -25,7 +25,9 @@ export function BottomNav({ route }: BottomNavProps) {
             <button
               key={name}
               onClick={() => navigate(path)}
-              className={`flex flex-col items-center gap-1 rounded-lg px-4 py-1.5 transition-colors ${active ? 'text-neutral-900' : 'text-neutral-400 hover:text-neutral-600'}`}
+              aria-label={label}
+              aria-current={active ? 'page' : undefined}
+              className={`flex flex-col items-center gap-1 rounded-lg px-5 py-1.5 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400 ${active ? 'text-neutral-900' : 'text-neutral-400 hover:text-neutral-600'}`}
             >
               <Icon className="h-5 w-5" />
               <span className="text-[10px] font-medium">{label}</span>

@@ -1,6 +1,12 @@
-import { Compass, ArrowRight } from 'lucide-react';
+import { Compass, ArrowRight, Lightbulb, Layers, Rocket } from 'lucide-react';
 import { Button } from '@/components/Button';
 import { navigate } from '@/hooks/useRoute';
+
+const steps = [
+  { num: '01', icon: Lightbulb, title: 'Choose an idea' },
+  { num: '02', icon: Layers, title: 'Build one step at a time' },
+  { num: '03', icon: Rocket, title: 'Ship your first project' },
+];
 
 export function LandingPage() {
   return (
@@ -14,7 +20,7 @@ export function LandingPage() {
         </div>
       </header>
 
-      <main className="flex flex-1 flex-col justify-center px-6 py-12">
+      <main className="flex flex-1 flex-col justify-center px-6 py-10">
         <div className="mx-auto w-full max-w-md">
           <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-3 py-1">
             <span className="h-2 w-2 rounded-full bg-emerald-500" />
@@ -27,7 +33,7 @@ export function LandingPage() {
             Your first project starts here.
           </h1>
           <p className="mt-4 text-lg leading-relaxed text-neutral-500">
-            Turn an idea into a real project, one understandable step at a time.
+            Build it yourself. Learn why it works. See your journey grow.
           </p>
 
           <div className="mt-8 flex flex-col gap-3">
@@ -38,6 +44,20 @@ export function LandingPage() {
             <Button variant="secondary" onClick={() => navigate('/setup')} className="w-full">
               See how it works
             </Button>
+          </div>
+
+          <div className="mt-10 space-y-3">
+            {steps.map((step) => (
+              <div key={step.num} className="flex items-center gap-4 rounded-2xl border border-neutral-200 bg-white p-4">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-neutral-100">
+                  <step.icon className="h-5 w-5 text-neutral-700" />
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-xs font-bold text-neutral-300">{step.num}</span>
+                  <span className="text-sm font-semibold text-neutral-900">{step.title}</span>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </main>

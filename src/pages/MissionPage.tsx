@@ -9,6 +9,7 @@ import {
   PartyPopper,
   ArrowRight,
   Lock,
+  Check,
 } from 'lucide-react';
 import { Button } from '@/components/Button';
 import { Card } from '@/components/Card';
@@ -34,6 +35,7 @@ export function MissionPage({ missionId }: MissionPageProps) {
   const [mentorMode, setMentorMode] = useState<MentorMode | null>(null);
   const [error, setError] = useState('');
   const [showComplete, setShowComplete] = useState(false);
+  const [reflectionSaved, setReflectionSaved] = useState(false);
 
   if (!project || !mission) {
     return (
@@ -48,7 +50,11 @@ export function MissionPage({ missionId }: MissionPageProps) {
     return (
       <div>
         <header className="mb-6 flex items-center gap-3">
-          <button onClick={() => navigate('/dashboard')} className="text-neutral-400 hover:text-neutral-900">
+          <button
+            onClick={() => navigate('/dashboard')}
+            aria-label="Back to dashboard"
+            className="text-neutral-400 hover:text-neutral-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400 rounded-lg"
+          >
             <ArrowLeft className="h-5 w-5" />
           </button>
           <span className="text-xs font-medium text-neutral-400">Mission {mission.order}</span>
@@ -71,6 +77,7 @@ export function MissionPage({ missionId }: MissionPageProps) {
   const total = project.missions.length;
   const nextMission = project.missions.find((m) => m.order === mission.order + 1);
   const isFinal = mission.order === total;
+  const hasExistingReflection = existing != null;
 
   const handleComplete = () => {
     const hasContent =
@@ -101,6 +108,8 @@ export function MissionPage({ missionId }: MissionPageProps) {
       savedAt: new Date().toISOString(),
     };
     saveReflection(reflection);
+    setReflectionSaved(true);
+    setTimeout(() => setReflectionSaved(false), 2500);
   };
 
   if (showComplete) {
@@ -110,11 +119,11 @@ export function MissionPage({ missionId }: MissionPageProps) {
           <PartyPopper className="h-16 w-16 text-neutral-900" />
         </div>
         <h1 className="mt-6 text-2xl font-bold tracking-tight">Mission complete</h1>
-        <p className="mt-2 text-sm text-neutral-500">
-          You finished Mission {mission.order}: {mission.title}
-        </p>
         {isFinal ? (
           <>
+            <p className="mt-2 text-sm text-neutral-500">
+              You finished Mission {mission.order}: {mission.title}
+            </p>
             <p className="mt-4 text-base font-semibold text-neutral-900">
               You finished your learning plan.
             </p>
@@ -124,10 +133,13 @@ export function MissionPage({ missionId }: MissionPageProps) {
             </Button>
           </>
         ) : (
-          <Button onClick={() => navigate(`/mission/${nextMission!.id}`)} className="mt-6 w-full max-w-xs">
-            Continue to next mission
-            <ArrowRight className="h-4 w-4" />
-          </Button>
+          <>
+            <p className="mt-2 text-sm text-neutral-500">Next step unlocked.</p>
+            <Button onClick={() => navigate(`/mission/${nextMission!.id}`)} className="mt-6 w-full max-w-xs">
+              Continue to next mission
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          </>
         )}
         <button
           onClick={() => navigate('/dashboard')}
@@ -142,7 +154,11 @@ export function MissionPage({ missionId }: MissionPageProps) {
   return (
     <div>
       <header className="mb-4 flex items-center gap-3">
-        <button onClick={() => navigate('/dashboard')} className="text-neutral-400 hover:text-neutral-900">
+        <button
+          onClick={() => navigate('/dashboard')}
+          aria-label="Back to dashboard"
+          className="text-neutral-400 hover:text-neutral-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400 rounded-lg"
+        >
           <ArrowLeft className="h-5 w-5" />
         </button>
         <span className="text-xs font-medium text-neutral-400">
@@ -172,63 +188,83 @@ export function MissionPage({ missionId }: MissionPageProps) {
         <span>Estimated time: {mission.estimatedMinutes} minutes</span>
       </div>
 
-      <div className="mt-4 grid grid-cols-3 gap-2">
-        <Button
-          variant="secondary"
-          onClick={() => setMentorMode('explain')}
-          className="flex-col gap-1 py-3 text-xs"
-        >
-          <BookOpen className="h-4 w-4" />
-          Explain this
-        </Button>
-        <Button
-          variant="secondary"
-          onClick={() => setMentorMode('hint')}
-          className="flex-col gap-1 py-3 text-xs"
-        >
-          <Lightbulb className="h-4 w-4" />
-          Give me a hint
-        </Button>
-        <Button
-          variant="secondary"
-          onClick={() => setMentorMode('stuck')}
-          className="flex-col gap-1 py-3 text-xs"
-        >
-          <HelpCircle className="h-4 w-4" />
-          I'm stuck
-        </Button>
+      <div className="mt-6">
+        <h2 className="mb-3 text-sm font-semibold text-neutral-900">Need help?</h2>
+        <div className="grid grid-cols-3 gap-2">
+          <Button
+            variant="secondary"
+            onClick={() => setMentorMode('explain')}
+            className="flex-col gap-1 py-3 text-xs"
+          >
+            <BookOpen className="h-4 w-4" />
+            Explain this
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={() => setMentorMode('hint')}
+            className="flex-col gap-1 py-3 text-xs"
+          >
+            <Lightbulb className="h-4 w-4" />
+            Give me a hint
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={() => setMentorMode('stuck')}
+            className="flex-col gap-1 py-3 text-xs"
+          >
+            <HelpCircle className="h-4 w-4" />
+            I'm stuck
+          </Button>
+        </div>
       </div>
 
       <div className="mt-6">
-        <h2 className="mb-3 text-sm font-semibold text-neutral-900">Reflection</h2>
+        <h2 className="mb-1 text-sm font-semibold text-neutral-900">
+          What happened while you built this?
+        </h2>
+        {hasExistingReflection && !reflectionSaved && (
+          <p className="mb-3 flex items-center gap-1.5 text-xs text-neutral-400">
+            <Check className="h-3.5 w-3.5" />
+            Your previous reflection has been restored.
+          </p>
+        )}
+        {reflectionSaved && (
+          <p className="mb-3 flex items-center gap-1.5 text-xs text-emerald-600 animate-fade-in">
+            <Check className="h-3.5 w-3.5" />
+            Reflection saved
+          </p>
+        )}
         <div className="space-y-3">
           <div>
-            <label className="mb-1 block text-xs font-medium text-neutral-400">What went wrong?</label>
+            <label htmlFor="ref-wrong" className="mb-1 block text-xs font-medium text-neutral-400">What went wrong?</label>
             <textarea
+              id="ref-wrong"
               value={whatWentWrong}
               onChange={(e) => setWhatWentWrong(e.target.value)}
               rows={2}
-              className="w-full resize-none rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm outline-none transition-colors focus:border-neutral-400"
+              className="w-full resize-none rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm outline-none transition-colors focus:border-neutral-400 focus:ring-2 focus:ring-neutral-100"
               placeholder="Write your thoughts..."
             />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-neutral-400">What did you change?</label>
+            <label htmlFor="ref-changed" className="mb-1 block text-xs font-medium text-neutral-400">What did you change?</label>
             <textarea
+              id="ref-changed"
               value={whatYouChanged}
               onChange={(e) => setWhatYouChanged(e.target.value)}
               rows={2}
-              className="w-full resize-none rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm outline-none transition-colors focus:border-neutral-400"
+              className="w-full resize-none rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm outline-none transition-colors focus:border-neutral-400 focus:ring-2 focus:ring-neutral-100"
               placeholder="Write your thoughts..."
             />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-neutral-400">What did you learn?</label>
+            <label htmlFor="ref-learned" className="mb-1 block text-xs font-medium text-neutral-400">What did you learn?</label>
             <textarea
+              id="ref-learned"
               value={whatYouLearned}
               onChange={(e) => setWhatYouLearned(e.target.value)}
               rows={2}
-              className="w-full resize-none rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm outline-none transition-colors focus:border-neutral-400"
+              className="w-full resize-none rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm outline-none transition-colors focus:border-neutral-400 focus:ring-2 focus:ring-neutral-100"
               placeholder="Write your thoughts..."
             />
           </div>
@@ -251,7 +287,7 @@ export function MissionPage({ missionId }: MissionPageProps) {
             You completed this mission
           </div>
         ) : (
-          <Button onClick={handleComplete} className="w-full">
+          <Button onClick={handleComplete} className="w-full py-3.5 text-base">
             <CheckCircle2 className="h-4 w-4" />
             Mark complete
           </Button>
